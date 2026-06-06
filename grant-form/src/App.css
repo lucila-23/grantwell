@@ -239,6 +239,24 @@
   box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.15);
 }
 
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 16px;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: #666;
+  background: #fafafa;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.form-group input[type="file"]:hover {
+  border-color: #40916c;
+  background: #f0fdf4;
+}
+
 .form-group textarea {
   min-height: 120px;
   resize: vertical;

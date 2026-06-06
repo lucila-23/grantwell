@@ -340,6 +340,37 @@ function App() {
                 placeholder="Explain how the project will sustain its impact beyond the grant period..."></textarea>
             </div>
 
+            <hr className="form-divider" />
+
+            <div className="form-section-title">
+              <span className="section-number">5</span>
+              Supporting Documents
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="doc_registration">
+                Proof of Registration / Legal Status <span className="required">*</span>
+              </label>
+              <span className="hint">Upload your organisation's registration certificate or equivalent legal document (PDF or DOCX, max 5MB)</span>
+              <input type="file" id="doc_registration" name="doc_registration" accept=".pdf,.docx,.doc" required />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="doc_budget">
+                Detailed Budget <span className="required">*</span>
+              </label>
+              <span className="hint">Upload a detailed budget breakdown for the proposed project (PDF or DOCX)</span>
+              <input type="file" id="doc_budget" name="doc_budget" accept=".pdf,.docx,.doc" required />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="doc_cv">
+                CV of Project Lead
+              </label>
+              <span className="hint">Upload the CV or resume of the project lead (optional)</span>
+              <input type="file" id="doc_cv" name="doc_cv" accept=".pdf,.docx,.doc" />
+            </div>
+
             <button type="submit" className="submit-btn" disabled={submitting}>
               {submitting ? 'Submitting...' : 'Submit Application'}
             </button>
