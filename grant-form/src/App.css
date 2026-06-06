@@ -1,5 +1,5 @@
 .site-header {
-  background: #1a1a2e;
+  background: #173D2E;
   color: white;
   padding: 0;
 }
@@ -27,7 +27,7 @@
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #3a9d6e, #74c69d);
+  background: linear-gradient(135deg, #3a9d6e, #F4C542);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -56,7 +56,7 @@
 }
 
 .hero-section {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #173D2E 0%, #16213e 50%, #0f3460 100%);
   color: white;
   padding: 80px 32px;
   text-align: center;
@@ -87,7 +87,7 @@
   display: inline-block;
   background: rgba(64, 145, 108, 0.2);
   border: 1px solid rgba(64, 145, 108, 0.4);
-  color: #74c69d;
+  color: #F4C542;
   padding: 6px 16px;
   border-radius: 20px;
   font-size: 13px;
@@ -130,7 +130,7 @@
   font-family: 'Playfair Display', serif;
   font-size: 32px;
   font-weight: 700;
-  color: #74c69d;
+  color: #F4C542;
 }
 
 .stat-label {
@@ -167,7 +167,7 @@
   font-family: 'Playfair Display', serif;
   font-size: 28px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 8px;
 }
 
@@ -197,7 +197,7 @@
   display: block;
   font-weight: 600;
   font-size: 14px;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 6px;
 }
 
@@ -226,7 +226,7 @@
   border-radius: 8px;
   font-size: 15px;
   font-family: 'Inter', sans-serif;
-  color: #1a1a2e;
+  color: #173D2E;
   background: white;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -277,7 +277,7 @@
 .form-section-title {
   font-size: 16px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
@@ -287,7 +287,7 @@
 .form-section-title .section-number {
   width: 28px;
   height: 28px;
-  background: #1a1a2e;
+  background: #173D2E;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -334,7 +334,7 @@
   font-family: 'Playfair Display', serif;
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 16px;
 }
 
@@ -383,7 +383,7 @@
 }
 
 .funding-highlight {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: linear-gradient(135deg, #173D2E, #16213e);
   color: white;
   border-radius: 12px;
   padding: 28px;
@@ -400,7 +400,7 @@
   font-family: 'Playfair Display', serif;
   font-size: 42px;
   font-weight: 700;
-  color: #74c69d;
+  color: #F4C542;
   margin: 12px 0;
 }
 
@@ -410,7 +410,7 @@
 }
 
 .site-footer {
-  background: #1a1a2e;
+  background: #173D2E;
   color: rgba(255, 255, 255, 0.5);
   text-align: center;
   padding: 32px;
@@ -456,7 +456,7 @@
   font-family: 'Playfair Display', serif;
   font-size: 24px;
   margin-bottom: 12px;
-  color: #1a1a2e;
+  color: #173D2E;
 }
 
 .success-modal p {
@@ -466,7 +466,7 @@
 }
 
 .success-modal button {
-  background: #1a1a2e;
+  background: #173D2E;
   color: white;
   border: none;
   padding: 12px 24px;

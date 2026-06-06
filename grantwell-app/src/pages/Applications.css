@@ -63,13 +63,13 @@
 
 .urgent-grant {
   font-weight: 600;
-  color: #1a1a2e;
+  color: #173D2E;
   font-size: 13px;
 }
 
 .urgent-detail {
   font-size: 12px;
-  color: #888;
+  color: #6D756F;
   margin-top: 2px;
 }
 
@@ -115,13 +115,13 @@
 }
 
 .filter-btn:hover {
-  border-color: #3a9d6e;
-  color: #3a9d6e;
+  border-color: #2E7D57;
+  color: #2E7D57;
 }
 
 .filter-btn.active {
-  background: #1a1a2e;
-  border-color: #1a1a2e;
+  background: #173D2E;
+  border-color: #173D2E;
   color: white;
 }
 
@@ -152,9 +152,9 @@
 
 .application-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 24px rgba(23,61,46,0.06);
   cursor: pointer;
   transition: all 0.2s;
   border: 2px solid transparent;
@@ -166,7 +166,7 @@
 }
 
 .application-card.selected {
-  border-color: #3a9d6e;
+  border-color: #2E7D57;
   box-shadow: 0 0 0 3px rgba(58,157,110,0.12);
 }
 
@@ -207,26 +207,26 @@
 .app-amount {
   font-size: 16px;
   font-weight: 800;
-  color: #1a1a2e;
+  color: #173D2E;
 }
 
 .app-card-title {
   font-size: 16px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 4px;
 }
 
 .app-card-funder {
   font-size: 13px;
-  color: #3a9d6e;
+  color: #2E7D57;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
 .app-card-project {
   font-size: 13px;
-  color: #888;
+  color: #6D756F;
   margin-bottom: 12px;
 }
 
@@ -234,7 +234,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: #aaa;
+  color: #6D756F;
   margin-bottom: 10px;
 }
 
@@ -257,17 +257,17 @@
 }
 
 .progress-draft { background: #94a3b8; }
-.progress-submitted { background: #4a90d9; }
-.progress-in_review { background: #e8b931; }
+.progress-submitted { background: #2B6CFF; }
+.progress-in_review { background: #F4C542; }
 .progress-approved { background: #22c55e; }
 .progress-rejected { background: #ef4444; }
 
 /* Detail */
 .application-detail {
   background: white;
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 28px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 24px rgba(23,61,46,0.06);
   position: sticky;
   top: 20px;
 }
@@ -283,7 +283,7 @@
 .detail-header h2 {
   font-size: 20px;
   font-weight: 800;
-  color: #1a1a2e;
+  color: #173D2E;
 }
 
 .detail-meta {
@@ -301,7 +301,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #888;
+  color: #6D756F;
   margin-bottom: 4px;
   font-weight: 600;
 }
@@ -309,13 +309,13 @@
 .meta-value {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #173D2E;
 }
 
 .timeline-section h3 {
   font-size: 16px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 20px;
 }
 
@@ -348,7 +348,7 @@
   z-index: 1;
   flex-shrink: 0;
   background: #f0fdf4;
-  border: 2px solid #3a9d6e;
+  border: 2px solid #2E7D57;
 }
 
 .timeline-item.future .timeline-dot {
@@ -359,8 +359,8 @@
 
 .dot-approved { background: #f0fdf4 !important; border-color: #22c55e !important; }
 .dot-rejected { background: #fef2f2 !important; border-color: #ef4444 !important; }
-.dot-funded { background: #fef9e7 !important; border-color: #e8b931 !important; }
-.dot-interview { background: #eff6ff !important; border-color: #4a90d9 !important; }
+.dot-funded { background: #fef9e7 !important; border-color: #F4C542 !important; }
+.dot-interview { background: #eff6ff !important; border-color: #2B6CFF !important; }
 
 .timeline-line {
   width: 2px;
@@ -371,7 +371,7 @@
 }
 
 .timeline-item.past .timeline-line {
-  background: #3a9d6e;
+  background: #2E7D57;
 }
 
 .timeline-content {
@@ -386,23 +386,23 @@
 .timeline-event {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 2px;
 }
 
 .timeline-date {
   font-size: 12px;
-  color: #888;
+  color: #6D756F;
 }
 
 .timeline-item.future .timeline-event {
-  color: #aaa;
+  color: #6D756F;
 }
 
 .detail-empty {
   text-align: center;
   padding: 60px 20px;
-  color: #888;
+  color: #6D756F;
 }
 
 .empty-icon {
@@ -413,13 +413,13 @@
 .detail-empty h3 {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 8px;
 }
 
 .detail-empty p {
   font-size: 14px;
-  color: #aaa;
+  color: #6D756F;
 }
 
 .status-badge {

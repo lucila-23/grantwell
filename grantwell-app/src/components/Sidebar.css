@@ -1,6 +1,6 @@
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #1a1a2e 0%, #1e2940 100%);
+  background: #173D2E;
   color: white;
   display: flex;
   flex-direction: column;
@@ -16,27 +16,33 @@
   align-items: center;
   gap: 12px;
   padding: 24px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.brand-logo {
+  height: 28px;
+  width: auto;
+  filter: brightness(0) invert(1);
 }
 
 .brand-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #e8b931, #f0d060);
+  background: #F4C542;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 16px;
-  color: #1a1a2e;
+  color: #173D2E;
   letter-spacing: -0.5px;
 }
 
 .brand-name {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 2px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.03em;
 }
 
 .sidebar-nav {
@@ -64,10 +70,10 @@
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 14px;
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.6);
   transition: all 0.2s;
   cursor: pointer;
   text-decoration: none;
@@ -75,13 +81,13 @@
 
 .nav-item:hover {
   color: white;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.1);
 }
 
 .nav-item.active {
   color: white;
-  background: rgba(232, 185, 49, 0.18);
-  border-left: 3px solid #e8b931;
+  background: rgba(255,255,255,0.15);
+  font-weight: 600;
 }
 
 .nav-icon {
@@ -93,7 +99,7 @@
 
 .sidebar-footer {
   padding: 16px 20px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .sidebar-user {
@@ -105,7 +111,7 @@
 .user-avatar {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #3a9d6e, #2d7a54);
+  background: #2E7D57;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -133,7 +139,7 @@
   border: 1px solid rgba(255,255,255,0.15);
   color: rgba(255,255,255,0.5);
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 12px;
   font-family: 'Inter', sans-serif;
   cursor: pointer;

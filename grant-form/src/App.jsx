@@ -182,51 +182,13 @@ function App() {
                 <label htmlFor="country">
                   Country of Implementation <span className="required">*</span>
                 </label>
-                <select id="country" name="country" required>
-                  <option value="">Select country...</option>
-                  <option value="AR">Argentina</option>
-                  <option value="BO">Bolivia</option>
-                  <option value="BR">Brazil</option>
-                  <option value="CL">Chile</option>
-                  <option value="CO">Colombia</option>
-                  <option value="EC">Ecuador</option>
-                  <option value="MX">Mexico</option>
-                  <option value="PE">Peru</option>
-                  <option value="PY">Paraguay</option>
-                  <option value="UY">Uruguay</option>
-                  <option value="VE">Venezuela</option>
-                  <option value="GT">Guatemala</option>
-                  <option value="HN">Honduras</option>
-                  <option value="SV">El Salvador</option>
-                  <option value="NI">Nicaragua</option>
-                  <option value="CR">Costa Rica</option>
-                  <option value="PA">Panama</option>
-                  <option value="KE">Kenya</option>
-                  <option value="NG">Nigeria</option>
-                  <option value="GH">Ghana</option>
-                  <option value="TZ">Tanzania</option>
-                  <option value="PH">Philippines</option>
-                  <option value="ID">Indonesia</option>
-                  <option value="VN">Vietnam</option>
-                  <option value="OTHER">Other</option>
-                </select>
+                <input type="text" id="country" name="country" required placeholder="e.g. Argentina" />
               </div>
               <div className="form-group">
                 <label htmlFor="thematic_area">
                   Thematic Area <span className="required">*</span>
                 </label>
-                <select id="thematic_area" name="thematic_area" required>
-                  <option value="">Select area...</option>
-                  <option value="education">Education & Youth Development</option>
-                  <option value="health">Health & Well-being</option>
-                  <option value="environment">Environment & Climate Action</option>
-                  <option value="gender">Gender Equity & Inclusion</option>
-                  <option value="human_rights">Human Rights & Justice</option>
-                  <option value="food_security">Food Security & Agriculture</option>
-                  <option value="water">Water & Sanitation</option>
-                  <option value="economic">Economic Empowerment</option>
-                  <option value="technology">Technology for Social Good</option>
-                </select>
+                <input type="text" id="thematic_area" name="thematic_area" required placeholder="e.g. Education & Youth Development" />
               </div>
             </div>
 

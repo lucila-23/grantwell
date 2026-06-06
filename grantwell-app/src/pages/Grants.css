@@ -24,7 +24,7 @@
 }
 
 .grants-search:focus {
-  border-color: #3a9d6e;
+  border-color: #2E7D57;
 }
 
 .grants-filters {
@@ -45,8 +45,8 @@
 }
 
 .grants-filters .filter-btn.active {
-  background: #2d7a54;
-  border-color: #2d7a54;
+  background: #173D2E;
+  border-color: #173D2E;
   color: white;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .grant-card:hover {
-  border-color: #3a9d6e;
+  border-color: #2E7D57;
   box-shadow: 0 4px 12px rgba(45,106,79,0.12);
   transform: translateY(-1px);
 }
@@ -145,7 +145,7 @@
   font-size: 15px;
   font-weight: 700;
   line-height: 1.4;
-  color: #1a1a2e;
+  color: #173D2E;
 }
 
 .grant-name a {
@@ -154,14 +154,14 @@
 }
 
 .grant-name a:hover {
-  color: #2d7a54;
+  color: #173D2E;
   text-decoration: underline;
 }
 
 .grant-donor {
   font-size: 13px;
   font-weight: 600;
-  color: #3a9d6e;
+  color: #2E7D57;
 }
 
 .grant-sector {
@@ -190,7 +190,7 @@
 
 .grant-budget {
   font-weight: 700;
-  color: #1a1a2e;
+  color: #173D2E;
 }
 
 .placeholder-page {
@@ -208,7 +208,7 @@
 .placeholder-page h1 {
   font-size: 28px;
   font-weight: 800;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 12px;
 }
 
@@ -279,7 +279,7 @@
 .step-number {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #3a9d6e, #2d7a54);
+  background: linear-gradient(135deg, #2E7D57, #173D2E);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -293,7 +293,7 @@
 .step h3 {
   font-size: 15px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #173D2E;
   margin-bottom: 4px;
 }
 
