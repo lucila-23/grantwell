@@ -33,9 +33,10 @@ function getGFormFields() {
     const titleEl = container.querySelector('.M7eMe, .freebirdFormviewerComponentsQuestionBaseTitle, [role="heading"], .freebirdFormviewerComponentsQuestionBaseHeader span');
     if (!titleEl) return;
 
-    const label = titleEl.textContent.trim().replace(/\s*\*\s*$/, '');
-    if (!label || seen.has(label)) return;
-    seen.add(label);
+    const rawLabel = titleEl.textContent.trim().replace(/\s*\*\s*$/, '');
+    if (!rawLabel || seen.has(rawLabel)) return;
+    seen.add(rawLabel);
+    const label = rawLabel.split(/\s*[-–—]\s*/)[0].trim();
 
     const input = container.querySelector('input[type="text"], input[type="email"], input[type="number"], input[type="url"], input[type="date"]');
     const textarea = container.querySelector('textarea');
@@ -123,20 +124,19 @@ function autofillGForm(profile) {
   const unmatched = [];
 
   fields.forEach(f => {
+    const shortLabel = f.label.length > 30 ? f.label.slice(0, 30) + '...' : f.label;
     const profileKey = findProfileMatch(f.label);
     if (profileKey && profile[profileKey]) {
       if (setGFormValue(f.element, String(profile[profileKey]))) {
         f.element.classList.add('grantfill-filled');
         setTimeout(() => f.element.classList.remove('grantfill-filled'), 2000);
         filled++;
-        matched.push(f.label);
+        matched.push(shortLabel);
       } else {
-        unmatched.push(f.label);
+        unmatched.push(shortLabel);
       }
-    } else if (profileKey && !profile[profileKey]) {
-      unmatched.push(`${f.label} (sin datos en perfil)`);
     } else {
-      unmatched.push(f.label);
+      unmatched.push(shortLabel);
     }
   });
 
@@ -233,18 +233,9 @@ function showGFormBanner() {
         const status = document.getElementById('gfb-status');
         if (!status) return;
         status.style.display = 'block';
-
-        let html = '';
-        if (res.filled > 0) {
-          html += `<div class="gfb-status-success" style="padding:8px 0;">✅ ${res.filled} campos completados</div>`;
-        }
-        if (res.unmatched.length > 0) {
-          html += `<div style="padding:6px 0; color:rgba(255,255,255,0.5); font-size:12px;">📝 Pendientes de revision manual: ${res.unmatched.slice(0, 5).join(', ')}${res.unmatched.length > 5 ? ` y ${res.unmatched.length - 5} más` : ''}</div>`;
-        }
-        status.innerHTML = html;
-        status.className = 'gfb-status';
-        status.style.padding = '10px 18px';
-        status.style.borderTop = '1px solid rgba(255,255,255,0.08)';
+        status.className = 'gfb-status gfb-status-success';
+        const pending = res.total - res.filled;
+        status.textContent = `✅ ${res.filled} completados` + (pending > 0 ? ` · ${pending} pendientes de revision` : '');
       });
     }
   });

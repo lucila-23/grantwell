@@ -355,17 +355,9 @@ function showGrantFillBanner() {
         const status = document.getElementById('gfb-status');
         if (!status) return;
         status.style.display = 'block';
-        status.style.padding = '10px 18px';
-        status.style.borderTop = '1px solid rgba(255,255,255,0.08)';
-
-        let html = '';
-        if (res.filled > 0) {
-          html += `<div style="color:#74c69d;padding:4px 0;">✅ ${res.filled} campos completados</div>`;
-        }
-        if (res.unmatched.length > 0) {
-          html += `<div style="color:rgba(255,255,255,0.5);font-size:12px;padding:4px 0;">📝 Pendientes: ${res.unmatched.slice(0, 5).join(', ')}${res.unmatched.length > 5 ? ` y ${res.unmatched.length - 5} más` : ''}</div>`;
-        }
-        status.innerHTML = html;
+        status.className = 'gfb-status gfb-status-success';
+        const pending = res.total - res.filled;
+        status.textContent = `✅ ${res.filled} completados` + (pending > 0 ? ` · ${pending} pendientes de revision` : '');
       });
     }
   });
