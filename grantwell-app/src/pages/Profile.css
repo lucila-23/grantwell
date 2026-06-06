@@ -274,6 +274,164 @@
   color: #ca8a04;
 }
 
+.docs-grid {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.doc-card.has-file {
+  border-style: solid;
+  border-color: #bbf7d0;
+  background: #fafffe;
+}
+
+.doc-card-icon {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.doc-card.has-file .doc-card-icon {
+  background: #f0fdf4;
+}
+
+.doc-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.doc-card-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.doc-card-file {
+  font-size: 12px;
+  color: #40916c;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.doc-card-meta {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 1px;
+}
+
+.doc-card-empty {
+  font-size: 12px;
+  color: #ccc;
+  margin-top: 2px;
+}
+
+.doc-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.doc-btn-upload, .doc-btn-replace {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.doc-btn-upload {
+  background: #1a1a2e;
+  color: white;
+}
+
+.doc-btn-upload:hover {
+  background: #2d2d4e;
+}
+
+.doc-btn-replace {
+  background: #f0f0f0;
+  color: #444;
+}
+
+.doc-btn-replace:hover {
+  background: #e5e5e5;
+}
+
+.doc-btn-remove {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.doc-btn-remove:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.docs-summary {
+  margin-top: 8px;
+}
+
+.docs-summary-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.docs-count {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.docs-progress-bar {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.docs-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #40916c, #74c69d);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
 @media (max-width: 900px) {
   .profile-layout {
     grid-template-columns: 1fr;

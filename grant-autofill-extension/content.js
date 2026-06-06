@@ -363,7 +363,81 @@ function showGrantFillBanner() {
   });
 }
 
+function detectFileInputs() {
+  const fileInputs = document.querySelectorAll('input[type="file"]');
+  if (fileInputs.length === 0) return;
+
+  chrome.storage.local.get(['grantfill_docs'], (result) => {
+    const docs = result.grantfill_docs;
+    if (!docs || docs.length === 0) return;
+
+    fileInputs.forEach(input => {
+      if (input.dataset.grantfillDone) return;
+      input.dataset.grantfillDone = 'true';
+
+      const wrapper = input.closest('.form-group, .field, div') || input.parentElement;
+
+      const popover = document.createElement('div');
+      popover.className = 'gf-file-popover';
+      popover.innerHTML = `
+        <div class="gf-fp-header">
+          <span class="gf-fp-icon">📎</span>
+          <span>Documentos precargados en GrantWell</span>
+        </div>
+        <div class="gf-fp-list">
+          ${docs.map((d, i) => `
+            <button class="gf-fp-item" data-idx="${i}">
+              <span class="gf-fp-item-icon">${d.fileType.includes('pdf') ? '📕' : '📘'}</span>
+              <span class="gf-fp-item-info">
+                <span class="gf-fp-item-label">${d.label}</span>
+                <span class="gf-fp-item-file">${d.fileName}</span>
+              </span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+
+      wrapper.style.position = 'relative';
+      wrapper.appendChild(popover);
+
+      popover.querySelectorAll('.gf-fp-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const idx = parseInt(btn.dataset.idx);
+          const doc = docs[idx];
+          if (!doc || !doc.data) return;
+
+          try {
+            const byteString = atob(doc.data.split(',')[1]);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+              ia[i] = byteString.charCodeAt(i);
+            }
+            const file = new File([ab], doc.fileName, { type: doc.fileType });
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            input.files = dt.files;
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+
+            btn.innerHTML = `
+              <span class="gf-fp-item-icon">✅</span>
+              <span class="gf-fp-item-info">
+                <span class="gf-fp-item-label">${doc.label}</span>
+                <span class="gf-fp-item-file" style="color:#16a34a;">Adjuntado correctamente</span>
+              </span>
+            `;
+          } catch (err) {
+            btn.querySelector('.gf-fp-item-file').textContent = 'Error al adjuntar';
+          }
+        });
+      });
+    });
+  });
+}
+
 const isGoogleForm = window.location.hostname === 'docs.google.com' && window.location.pathname.startsWith('/forms');
 if (!isGoogleForm) {
   setTimeout(showGrantFillBanner, 1500);
+  setTimeout(detectFileInputs, 2000);
 }

@@ -62,10 +62,28 @@ function syncFromApp() {
   });
 }
 
+function syncDocs() {
+  const raw = localStorage.getItem('gw_docs');
+  if (!raw) return;
+  try {
+    const docs = JSON.parse(raw).map(d => ({
+      key: d.key,
+      label: d.label,
+      fileName: d.fileName,
+      fileType: d.fileType,
+      fileSize: d.fileSize,
+      data: d.data,
+    }));
+    chrome.storage.local.set({ grantfill_docs: docs });
+  } catch {}
+}
+
 syncFromApp();
+syncDocs();
 
 const observer = new MutationObserver(() => {
   syncFromApp();
+  syncDocs();
 });
 observer.observe(document.body, { childList: true, subtree: true });
 
