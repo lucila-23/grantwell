@@ -1,0 +1,108 @@
+.placeholder-page {
+  text-align: center;
+  padding: 60px 40px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.placeholder-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+}
+
+.placeholder-page h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin-bottom: 12px;
+}
+
+.placeholder-page > p {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.placeholder-badge {
+  display: inline-block;
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 32px;
+}
+
+.placeholder-badge.installed {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.placeholder-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  text-align: left;
+}
+
+.pf-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.pf-item span:first-child {
+  font-size: 20px;
+}
+
+.autofill-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #40916c, #2d6a4f);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.step h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.step p {
+  font-size: 13px;
+  color: #888;
+}

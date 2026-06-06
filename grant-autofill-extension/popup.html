@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 380px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f8faf9;
+      color: #1a1a2e;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e5e7eb;
+      background: white;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: #888;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: #40916c;
+      border-bottom-color: #40916c;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .section {
+      padding: 16px 20px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 4px;
+    }
+
+    .field input, .field textarea, .field select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #1a1a2e;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    .field input:focus, .field textarea:focus, .field select:focus {
+      outline: none;
+      border-color: #40916c;
+      box-shadow: 0 0 0 2px rgba(64,145,108,0.15);
+    }
+
+    .field textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #40916c, #2d6a4f);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(45,106,79,0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 10px;
+      background: white;
+      color: #40916c;
+      border: 1px solid #40916c;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: #f0fdf4;
+    }
+
+    .status {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin: 12px 20px;
+      display: none;
+    }
+
+    .status.success {
+      display: block;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .status.error {
+      display: block;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .status.info {
+      display: block;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+    }
+
+    .profile-saved-badge {
+      display: inline-block;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .footer {
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .detected-fields {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    .detected-field {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .detected-field:last-child { border-bottom: none; }
+
+    .detected-field .field-name {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .detected-field .field-match {
+      font-size: 11px;
+      color: #40916c;
+      background: #f0fdf4;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .detected-field .field-no-match {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .scan-animation {
+      text-align: center;
+      padding: 24px;
+      color: #888;
+      font-size: 13px;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid #e5e7eb;
+      border-top-color: #40916c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>GrantFill</h1>
+    <p>Smart grant application autofill</p>
+    <div id="profileBadge" class="profile-saved-badge" style="display:none;">Profile loaded</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="autofill">Autofill</button>
+    <button class="tab" data-tab="profile">My Profile</button>
+  </div>
+
+  <!-- AUTOFILL TAB -->
+  <div id="tab-autofill" class="tab-content active">
+    <div id="scanStatus" class="scan-animation">
+      <div class="spinner"></div>
+      Scanning page for form fields...
+    </div>
+
+    <div id="fieldsFound" style="display:none;">
+      <div class="section">
+        <div class="section-title">Detected Fields</div>
+        <div id="detectedFields" class="detected-fields"></div>
+        <button id="btnAutofill" class="btn-primary">
+          <span>⚡</span> Autofill Application
+        </button>
+        <button id="btnClear" class="btn-secondary">Clear All Fields</button>
+      </div>
+    </div>
+
+    <div id="noFields" style="display:none;">
+      <div class="section" style="text-align:center; padding:32px 20px;">
+        <div style="font-size:32px; margin-bottom:12px;">📋</div>
+        <div style="font-weight:600; margin-bottom:4px;">No form detected</div>
+        <div style="font-size:13px; color:#888;">Navigate to a grant application page and try again.</div>
+      </div>
+    </div>
+
+    <div id="autofillStatus" class="status"></div>
+  </div>
+
+  <!-- PROFILE TAB -->
+  <div id="tab-profile" class="tab-content">
+    <div class="section">
+      <div class="section-title">Organization Info</div>
+      <div class="field">
+        <label>Organisation Name</label>
+        <input type="text" id="prof_org_name" placeholder="e.g. Fundación Esperanza Verde">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Contact Name</label>
+          <input type="text" id="prof_contact_name" placeholder="Full name">
+        </div>
+        <div class="field">
+          <label>Contact Email</label>
+          <input type="email" id="prof_contact_email" placeholder="email@org.com">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Website</label>
+          <input type="url" id="prof_website" placeholder="https://...">
+        </div>
+        <div class="field">
+          <label>Year Founded</label>
+          <input type="number" id="prof_year_founded" placeholder="e.g. 2015">
+        </div>
+      </div>
+      <div class="field">
+        <label>Country</label>
+        <select id="prof_country">
+          <option value="">Select...</option>
+          <option value="AR">Argentina</option>
+          <option value="BO">Bolivia</option>
+          <option value="BR">Brazil</option>
+          <option value="CL">Chile</option>
+          <option value="CO">Colombia</option>
+          <option value="EC">Ecuador</option>
+          <option value="MX">Mexico</option>
+          <option value="PE">Peru</option>
+          <option value="PY">Paraguay</option>
+          <option value="UY">Uruguay</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Mission Statement</label>
+        <textarea id="prof_mission" placeholder="Your organization's mission..."></textarea>
+      </div>
+      <div class="field">
+        <label>Thematic Area</label>
+        <select id="prof_thematic_area">
+          <option value="">Select...</option>
+          <option value="education">Education & Youth Development</option>
+          <option value="health">Health & Well-being</option>
+          <option value="environment">Environment & Climate Action</option>
+          <option value="gender">Gender Equity & Inclusion</option>
+          <option value="human_rights">Human Rights & Justice</option>
+          <option value="food_security">Food Security & Agriculture</option>
+          <option value="water">Water & Sanitation</option>
+          <option value="economic">Economic Empowerment</option>
+          <option value="technology">Technology for Social Good</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Default Project Info</div>
+      <div class="field">
+        <label>Project Name</label>
+        <input type="text" id="prof_project_name" placeholder="Your main project name">
+      </div>
+      <div class="field">
+        <label>Project Description</label>
+        <textarea id="prof_project_outline" placeholder="Describe the problem, solution, target community, and your capacity..." style="min-height:80px;"></textarea>
+      </div>
+      <div class="field">
+        <label>SDG Alignment</label>
+        <textarea id="prof_sdg" placeholder="Which UN SDGs your project addresses..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Total Budget (USD)</label>
+          <input type="number" id="prof_budget_total" placeholder="e.g. 50000">
+        </div>
+        <div class="field">
+          <label>Amount Requested (USD)</label>
+          <input type="number" id="prof_budget_requested" placeholder="e.g. 45000">
+        </div>
+      </div>
+      <div class="field">
+        <label>Budget Breakdown</label>
+        <textarea id="prof_budget_breakdown" placeholder="e.g. Personnel: 40%, Equipment: 20%..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Start Date</label>
+          <input type="text" id="prof_start_date" placeholder="e.g. September 2026">
+        </div>
+        <div class="field">
+          <label>End Date</label>
+          <input type="text" id="prof_end_date" placeholder="e.g. August 2027">
+        </div>
+      </div>
+      <div class="field">
+        <label>Key Milestones</label>
+        <textarea id="prof_milestones" placeholder="1. Assessment — Month 2&#10;2. Launch — Month 4..."></textarea>
+      </div>
+      <div class="field">
+        <label>Expected Beneficiaries</label>
+        <input type="number" id="prof_beneficiaries" placeholder="e.g. 500">
+      </div>
+      <div class="field">
+        <label>Impact Measurement</label>
+        <textarea id="prof_impact" placeholder="How will you measure and report impact..."></textarea>
+      </div>
+      <div class="field">
+        <label>Sustainability Plan</label>
+        <textarea id="prof_sustainability" placeholder="How will impact continue after funding ends..."></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <button id="btnSaveProfile" class="btn-primary">
+        <span>💾</span> Save Profile
+      </button>
+    </div>
+
+    <div id="saveStatus" class="status"></div>
+  </div>
+
+  <div class="footer">
+    GrantFill v1.0 — Built for NGO Grant Applications
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

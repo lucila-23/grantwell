@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.vercel/
+.claude/
+.wrangler/
+*.log
+.DS_Store
