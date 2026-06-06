@@ -316,4 +316,7 @@ function updateBannerStatus(filled, total) {
   }
 }
 
-setTimeout(showGrantFillBanner, 1500);
+const isGoogleForm = window.location.hostname === 'docs.google.com' && window.location.pathname.startsWith('/forms');
+if (!isGoogleForm) {
+  setTimeout(showGrantFillBanner, 1500);
+}
