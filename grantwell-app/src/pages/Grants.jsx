@@ -189,7 +189,7 @@ export function Autofill() {
   return (
     <div className="placeholder-page">
       <div className="placeholder-icon">⚡</div>
-      <h1>GrantFill Extension</h1>
+      <h1>PolenFill Extension</h1>
       <p>Extension de Chrome que autocompleta formularios de postulacion con los datos de tu organizacion.</p>
       <div className="placeholder-badge installed">Extension disponible</div>
       <div className="autofill-steps">
@@ -197,7 +197,7 @@ export function Autofill() {
           <div className="step-number">1</div>
           <div>
             <h3>Instala la extension</h3>
-            <p>Descarga e instala GrantFill en Chrome desde chrome://extensions</p>
+            <p>Descarga e instala PolenFill en Chrome desde chrome://extensions</p>
           </div>
         </div>
         <div className="step">
@@ -211,7 +211,7 @@ export function Autofill() {
           <div className="step-number">3</div>
           <div>
             <h3>Postulate en 1 click</h3>
-            <p>Navega a cualquier formulario de grant y usa GrantFill para autocompletar</p>
+            <p>Navega a cualquier formulario de grant y usa PolenFill para autocompletar</p>
           </div>
         </div>
       </div>

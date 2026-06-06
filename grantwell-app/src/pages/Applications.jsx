@@ -23,6 +23,14 @@ const EVENT_ICONS = {
   pending: '⏳',
 }
 
+function getDaysUntilDeadline(deadline) {
+  if (!deadline) return null
+  const now = new Date()
+  const dl = new Date(deadline)
+  const diff = Math.ceil((dl - now) / (1000 * 60 * 60 * 24))
+  return diff
+}
+
 export default function Applications() {
   const [selected, setSelected] = useState(null)
   const [filter, setFilter] = useState('all')
@@ -52,6 +60,12 @@ export default function Applications() {
       .catch(() => {})
   }, [])
 
+  const urgentApps = applications.filter(a => {
+    if (a.status !== 'draft') return false
+    const days = getDaysUntilDeadline(a.deadline)
+    return days !== null && days >= 0 && days <= 7
+  })
+
   const filtered = filter === 'all'
     ? applications
     : applications.filter(a => a.status === filter)
@@ -68,6 +82,33 @@ export default function Applications() {
           <p className="page-subtitle">Seguimiento y timeline de todas tus postulaciones</p>
         </div>
       </div>
+
+      {urgentApps.length > 0 && (
+        <div className="urgent-alerts">
+          {urgentApps.map(app => {
+            const days = getDaysUntilDeadline(app.deadline)
+            return (
+              <div key={app.id} className="urgent-alert" onClick={() => setSelected(app.id)}>
+                <div className="urgent-icon">⚠️</div>
+                <div className="urgent-content">
+                  <div className="urgent-title">
+                    {days <= 0 ? 'Deadline vencido' : days === 1 ? 'Vence manana' : `Vence en ${days} dias`}
+                    <span className="urgent-grant">{app.grantName}</span>
+                  </div>
+                  <div className="urgent-detail">
+                    {app.projectName} · Deadline: {app.deadline} · {app.currency} {app.amount.toLocaleString()}
+                  </div>
+                </div>
+                <div className="urgent-action">
+                  <button className="urgent-btn" onClick={(e) => { e.stopPropagation(); setSelected(app.id) }}>
+                    Completar envio
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       <div className="filter-bar">
         {['all', 'draft', 'submitted', 'in_review', 'approved', 'rejected'].map(f => (
@@ -86,35 +127,48 @@ export default function Applications() {
 
       <div className="applications-layout">
         <div className="applications-list">
-          {filtered.map(app => (
-            <div
-              key={app.id}
-              className={`application-card ${selected === app.id ? 'selected' : ''}`}
-              onClick={() => setSelected(app.id)}
-            >
-              <div className="app-card-header">
-                <span className={`status-badge status-${app.status}`}>
-                  {STATUS_LABELS[app.status]}
-                </span>
-                <span className="app-amount">{app.currency} {app.amount.toLocaleString()}</span>
+          {filtered.map(app => {
+            const days = getDaysUntilDeadline(app.deadline)
+            const isUrgent = app.status === 'draft' && days !== null && days >= 0 && days <= 7
+            return (
+              <div
+                key={app.id}
+                className={`application-card ${selected === app.id ? 'selected' : ''} ${isUrgent ? 'card-urgent' : ''}`}
+                onClick={() => setSelected(app.id)}
+              >
+                <div className="app-card-header">
+                  <div className="app-card-badges">
+                    <span className={`status-badge status-${app.status}`}>
+                      {STATUS_LABELS[app.status]}
+                    </span>
+                    {isUrgent && (
+                      <span className="status-badge status-urgent-badge">
+                        ⚠️ {days <= 0 ? 'Vencido' : days === 1 ? 'Vence manana' : `${days} dias`}
+                      </span>
+                    )}
+                  </div>
+                  <span className="app-amount">{app.currency} {app.amount.toLocaleString()}</span>
+                </div>
+                <h3 className="app-card-title">{app.grantName}</h3>
+                <p className="app-card-funder">{app.funder}</p>
+                <p className="app-card-project">{app.projectName}</p>
+                <div className="app-card-footer">
+                  <span className="app-card-date">
+                    {app.submittedDate ? `Enviada: ${app.submittedDate}` : 'Sin enviar'}
+                  </span>
+                  <span className={`app-card-deadline ${isUrgent ? 'deadline-urgent' : ''}`}>
+                    Deadline: {app.deadline}
+                  </span>
+                </div>
+                <div className="app-progress-bar">
+                  <div
+                    className={`app-progress-fill progress-${app.status}`}
+                    style={{ width: `${(app.timeline.length / 7) * 100}%` }}
+                  ></div>
+                </div>
               </div>
-              <h3 className="app-card-title">{app.grantName}</h3>
-              <p className="app-card-funder">{app.funder}</p>
-              <p className="app-card-project">{app.projectName}</p>
-              <div className="app-card-footer">
-                <span className="app-card-date">
-                  {app.submittedDate ? `Enviada: ${app.submittedDate}` : 'Sin enviar'}
-                </span>
-                <span className="app-card-deadline">Deadline: {app.deadline}</span>
-              </div>
-              <div className="app-progress-bar">
-                <div
-                  className={`app-progress-fill progress-${app.status}`}
-                  style={{ width: `${(app.timeline.length / 7) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         <div className="application-detail">

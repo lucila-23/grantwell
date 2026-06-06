@@ -1,6 +1,6 @@
 .sidebar {
   width: 260px;
-  background: #1a1a2e;
+  background: linear-gradient(180deg, #1a1a2e 0%, #1e2940 100%);
   color: white;
   display: flex;
   flex-direction: column;
@@ -22,20 +22,21 @@
 .brand-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #40916c, #74c69d);
+  background: linear-gradient(135deg, #e8b931, #f0d060);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 16px;
+  color: #1a1a2e;
   letter-spacing: -0.5px;
 }
 
 .brand-name {
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: 2px;
 }
 
 .sidebar-nav {
@@ -79,7 +80,8 @@
 
 .nav-item.active {
   color: white;
-  background: rgba(64, 145, 108, 0.25);
+  background: rgba(232, 185, 49, 0.18);
+  border-left: 3px solid #e8b931;
 }
 
 .nav-icon {
@@ -103,7 +105,7 @@
 .user-avatar {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #40916c, #2d6a4f);
+  background: linear-gradient(135deg, #3a9d6e, #2d7a54);
   border-radius: 50%;
   display: flex;
   align-items: center;

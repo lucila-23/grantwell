@@ -202,16 +202,16 @@ function showGFormBanner() {
       <div class="gfb-content">
         <div class="gfb-icon">⚡</div>
         <div class="gfb-text">
-          <div class="gfb-title">GrantFill detectó ${fields.length} campos</div>
+          <div class="gfb-title">PolenFill detectó ${fields.length} campos</div>
           <div class="gfb-sub">${hasProfile
             ? `<strong>${matchableCount}</strong> pueden completarse automaticamente como <strong>${user?.org_name || profile.prof_org_name || 'tu ONG'}</strong>. El resto queda para revision manual.`
-            : 'Inicia sesion en GrantWell para sincronizar tus datos'
+            : 'Inicia sesion en POLEN para sincronizar tus datos'
           }</div>
         </div>
         <div class="gfb-actions">
           ${hasProfile
             ? `<button id="gfb-autofill" class="gfb-btn-fill">Autocompletar (${matchableCount})</button>`
-            : `<a href="https://grantwell-app.vercel.app" target="_blank" class="gfb-btn-fill">Ir a GrantWell</a>`
+            : `<a href="https://grantwell-app.vercel.app" target="_blank" class="gfb-btn-fill">Ir a POLEN</a>`
           }
           <button id="gfb-close" class="gfb-btn-close">✕</button>
         </div>

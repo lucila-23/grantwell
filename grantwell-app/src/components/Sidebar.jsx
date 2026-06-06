@@ -6,13 +6,13 @@ export default function Sidebar({ onLogout }) {
   const user = getUser()
   const initials = user?.contact_name
     ? user.contact_name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-    : 'GW'
+    : 'P'
 
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <div className="brand-icon">GW</div>
-        <span className="brand-name">GrantWell</span>
+        <div className="brand-icon">P</div>
+        <span className="brand-name">POLEN</span>
       </div>
 
       <nav className="sidebar-nav">
@@ -48,7 +48,7 @@ export default function Sidebar({ onLogout }) {
           <div className="nav-section-label">Herramientas</div>
           <NavLink to="/autofill" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <span className="nav-icon">⚡</span>
-            GrantFill Extension
+            PolenFill Extension
           </NavLink>
         </div>
       </nav>

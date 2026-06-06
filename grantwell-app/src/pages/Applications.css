@@ -4,6 +4,94 @@
   gap: 20px;
 }
 
+/* Urgent deadline alerts */
+.urgent-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.urgent-alert {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #fef2f2, #fff5f5);
+  border: 1px solid #fecaca;
+  border-left: 4px solid #ef4444;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: alert-slide-in 0.4s ease-out;
+}
+
+@keyframes alert-slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.urgent-alert:hover {
+  box-shadow: 0 2px 8px rgba(239,68,68,0.15);
+  border-color: #f87171;
+}
+
+.urgent-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  animation: pulse-icon 2s infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.urgent-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.urgent-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.urgent-grant {
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 13px;
+}
+
+.urgent-detail {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.urgent-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.urgent-btn:hover {
+  background: #dc2626;
+}
+
+/* Filters */
 .filter-bar {
   display: flex;
   gap: 8px;
@@ -27,8 +115,8 @@
 }
 
 .filter-btn:hover {
-  border-color: #40916c;
-  color: #40916c;
+  border-color: #3a9d6e;
+  color: #3a9d6e;
 }
 
 .filter-btn.active {
@@ -48,6 +136,7 @@
   background: rgba(255,255,255,0.2);
 }
 
+/* Layout */
 .applications-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -77,8 +166,17 @@
 }
 
 .application-card.selected {
-  border-color: #40916c;
-  box-shadow: 0 0 0 3px rgba(64,145,108,0.12);
+  border-color: #3a9d6e;
+  box-shadow: 0 0 0 3px rgba(58,157,110,0.12);
+}
+
+.application-card.card-urgent {
+  border-color: #fecaca;
+  background: linear-gradient(135deg, #ffffff, #fff8f8);
+}
+
+.application-card.card-urgent:hover {
+  border-color: #f87171;
 }
 
 .app-card-header {
@@ -86,6 +184,24 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+}
+
+.app-card-badges {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.status-urgent-badge {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+  font-size: 11px !important;
+  animation: pulse-urgent 2s infinite;
+}
+
+@keyframes pulse-urgent {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
 }
 
 .app-amount {
@@ -103,7 +219,7 @@
 
 .app-card-funder {
   font-size: 13px;
-  color: #40916c;
+  color: #3a9d6e;
   font-weight: 600;
   margin-bottom: 4px;
 }
@@ -122,6 +238,11 @@
   margin-bottom: 10px;
 }
 
+.deadline-urgent {
+  color: #dc2626 !important;
+  font-weight: 700;
+}
+
 .app-progress-bar {
   height: 4px;
   background: #f0f0f0;
@@ -136,11 +257,12 @@
 }
 
 .progress-draft { background: #94a3b8; }
-.progress-submitted { background: #3b82f6; }
-.progress-in_review { background: #f59e0b; }
+.progress-submitted { background: #4a90d9; }
+.progress-in_review { background: #e8b931; }
 .progress-approved { background: #22c55e; }
 .progress-rejected { background: #ef4444; }
 
+/* Detail */
 .application-detail {
   background: white;
   border-radius: 12px;
@@ -226,7 +348,7 @@
   z-index: 1;
   flex-shrink: 0;
   background: #f0fdf4;
-  border: 2px solid #40916c;
+  border: 2px solid #3a9d6e;
 }
 
 .timeline-item.future .timeline-dot {
@@ -237,8 +359,8 @@
 
 .dot-approved { background: #f0fdf4 !important; border-color: #22c55e !important; }
 .dot-rejected { background: #fef2f2 !important; border-color: #ef4444 !important; }
-.dot-funded { background: #fefce8 !important; border-color: #f59e0b !important; }
-.dot-interview { background: #eff6ff !important; border-color: #3b82f6 !important; }
+.dot-funded { background: #fef9e7 !important; border-color: #e8b931 !important; }
+.dot-interview { background: #eff6ff !important; border-color: #4a90d9 !important; }
 
 .timeline-line {
   width: 2px;
@@ -249,7 +371,7 @@
 }
 
 .timeline-item.past .timeline-line {
-  background: #40916c;
+  background: #3a9d6e;
 }
 
 .timeline-content {
@@ -311,7 +433,7 @@
 
 .status-draft { background: #f1f5f9; color: #64748b; }
 .status-submitted { background: #eff6ff; color: #2563eb; }
-.status-in_review { background: #fefce8; color: #ca8a04; }
+.status-in_review { background: #fef9e7; color: #b8860b; }
 .status-approved { background: #f0fdf4; color: #16a34a; }
 .status-rejected { background: #fef2f2; color: #dc2626; }
 

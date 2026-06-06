@@ -6,7 +6,7 @@
 
 .login-left {
   flex: 1;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #1e2940 50%, #162338 100%);
   color: white;
   display: flex;
   flex-direction: column;
@@ -23,8 +23,8 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at 30% 70%, rgba(64,145,108,0.15) 0%, transparent 50%),
-              radial-gradient(circle at 70% 30%, rgba(116,198,157,0.1) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 70%, rgba(232,185,49,0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 30%, rgba(58,157,110,0.1) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -40,19 +40,20 @@
 .login-brand-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #40916c, #74c69d);
+  background: linear-gradient(135deg, #e8b931, #f0d060);
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 16px;
+  font-size: 20px;
+  color: #1a1a2e;
 }
 
 .login-brand h1 {
   font-size: 32px;
   font-weight: 800;
-  letter-spacing: -1px;
+  letter-spacing: 3px;
 }
 
 .login-tagline {
@@ -148,14 +149,14 @@
 
 .login-field input:focus {
   outline: none;
-  border-color: #40916c;
-  box-shadow: 0 0 0 3px rgba(64,145,108,0.12);
+  border-color: #3a9d6e;
+  box-shadow: 0 0 0 3px rgba(58,157,110,0.12);
 }
 
 .login-btn {
   width: 100%;
   padding: 13px;
-  background: linear-gradient(135deg, #40916c, #2d6a4f);
+  background: linear-gradient(135deg, #3a9d6e, #2d7a54);
   color: white;
   border: none;
   border-radius: 8px;
@@ -169,7 +170,7 @@
 
 .login-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(45,106,79,0.3);
+  box-shadow: 0 4px 12px rgba(58,157,110,0.3);
 }
 
 .login-btn:disabled {
@@ -187,7 +188,7 @@
 .login-toggle button {
   background: none;
   border: none;
-  color: #40916c;
+  color: #3a9d6e;
   font-weight: 600;
   cursor: pointer;
   font-size: 14px;

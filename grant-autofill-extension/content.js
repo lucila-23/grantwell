@@ -321,10 +321,10 @@ function showGrantFillBanner() {
       <div class="gfb-content">
         <div class="gfb-icon">⚡</div>
         <div class="gfb-text">
-          <div class="gfb-title">GrantFill detectó ${formFieldCount} campos</div>
+          <div class="gfb-title">PolenFill detectó ${formFieldCount} campos</div>
           <div class="gfb-sub">${hasProfile
             ? `<strong>${info.matchable}</strong> pueden completarse automaticamente como <strong>${user?.org_name || profile.prof_org_name || 'tu ONG'}</strong>. El resto queda para revision manual.`
-            : 'Inicia sesion en GrantWell para sincronizar tus datos'
+            : 'Inicia sesion en POLEN para sincronizar tus datos'
           }</div>
         </div>
         <div class="gfb-actions">
@@ -382,7 +382,10 @@ function detectFileInputs() {
       popover.innerHTML = `
         <div class="gf-fp-header">
           <span class="gf-fp-icon">📎</span>
-          <span>Documentos precargados en GrantWell</span>
+          <span>Documentos precargados en POLEN</span>
+          <span class="gf-fp-header-actions">
+            <button class="gf-fp-close" title="Cerrar">✕</button>
+          </span>
         </div>
         <div class="gf-fp-list">
           ${docs.map((d, i) => `
@@ -399,6 +402,12 @@ function detectFileInputs() {
 
       wrapper.style.position = 'relative';
       wrapper.appendChild(popover);
+
+      popover.querySelector('.gf-fp-close').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        popover.remove();
+      });
 
       popover.querySelectorAll('.gf-fp-item').forEach(btn => {
         btn.addEventListener('click', (e) => {

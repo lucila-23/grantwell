@@ -100,14 +100,30 @@ export const applications = [
       { date: '2026-06-01', event: 'Borrador iniciado', type: 'draft' },
     ],
   },
+  {
+    id: 6,
+    grantName: 'Fondo de Respuesta Rapida — Educacion Digital',
+    funder: 'Open Society Foundations',
+    amount: 30000,
+    currency: 'USD',
+    status: 'draft',
+    urgent: true,
+    projectName: 'Conectar Igualdad Tech — Acceso digital rural',
+    submittedDate: null,
+    deadline: '2026-06-10',
+    timeline: [
+      { date: '2026-06-03', event: 'Borrador iniciado', type: 'draft' },
+      { date: '2026-06-10', event: 'Deadline de envio', type: 'pending' },
+    ],
+  },
 ];
 
 export const stats = {
-  totalApplied: 5,
+  totalApplied: 6,
   approved: 1,
   inReview: 2,
   rejected: 1,
-  draft: 1,
+  draft: 2,
   totalFunded: 10000,
   successRate: 25,
   avgResponseDays: 45,

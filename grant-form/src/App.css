@@ -27,7 +27,7 @@
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #40916c, #74c69d);
+  background: linear-gradient(135deg, #3a9d6e, #74c69d);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -235,7 +235,7 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #40916c;
+  border-color: #3a9d6e;
   box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.15);
 }
 
@@ -253,7 +253,7 @@
 }
 
 .form-group input[type="file"]:hover {
-  border-color: #40916c;
+  border-color: #3a9d6e;
   background: #f0fdf4;
 }
 
@@ -298,7 +298,7 @@
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #40916c, #2d6a4f);
+  background: linear-gradient(135deg, #3a9d6e, #2d7a54);
   color: white;
   border: none;
   padding: 14px 32px;
@@ -355,7 +355,7 @@
 
 .sidebar-card li::before {
   content: '✓';
-  color: #40916c;
+  color: #3a9d6e;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -377,7 +377,7 @@
 }
 
 .timeline-date {
-  color: #40916c;
+  color: #3a9d6e;
   font-weight: 600;
   font-size: 13px;
 }

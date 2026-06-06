@@ -333,8 +333,8 @@ export default function Profile() {
           </div>
 
           <div className="profile-tip-card">
-            <h4>Documentos y GrantFill</h4>
-            <p>Los documentos que cargues aca se sincronizan con la extension GrantFill. Cuando un formulario pida adjuntar archivos, la extension te va a sugerir tus documentos precargados.</p>
+            <h4>Documentos y PolenFill</h4>
+            <p>Los documentos que cargues aca se sincronizan con la extension PolenFill. Cuando un formulario pida adjuntar archivos, la extension te va a sugerir tus documentos precargados.</p>
           </div>
 
           <div className="profile-tip-card">

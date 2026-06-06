@@ -34,8 +34,8 @@ export default function Login({ onLogin }) {
     <div className="login-page">
       <div className="login-left">
         <div className="login-brand">
-          <div className="login-brand-icon">GW</div>
-          <h1>GrantWell</h1>
+          <div className="login-brand-icon">P</div>
+          <h1>POLEN</h1>
         </div>
         <p className="login-tagline">
           La plataforma que conecta ONGs con oportunidades de financiamiento.
@@ -67,7 +67,7 @@ export default function Login({ onLogin }) {
           <p className="login-form-sub">
             {isRegister
               ? 'Registra tu organizacion para empezar'
-              : 'Ingresa a tu cuenta de GrantWell'}
+              : 'Ingresa a tu cuenta de POLEN'}
           </p>
 
           {error && <div className="login-error">{error}</div>}

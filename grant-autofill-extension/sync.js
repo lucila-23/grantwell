@@ -1,3 +1,4 @@
+// POLEN API — syncs profile from the web app to the extension
 const API_URL = 'https://grantwell-api.lucilaprieto8.workers.dev';
 
 function syncFromApp() {
