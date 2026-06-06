@@ -244,21 +244,76 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   return true;
 });
 
+function countMatchableFields(profile) {
+  const inputs = document.querySelectorAll('input, textarea, select');
+  let matchable = 0;
+  let total = 0;
+  const unmatchedLabels = [];
+
+  inputs.forEach(el => {
+    if (el.type === 'hidden' || el.type === 'submit' || el.type === 'button') return;
+    if (el.offsetParent === null) return;
+    total++;
+
+    const fieldInfo = { id: el.id || '', name: el.name || '', label: findLabel(el) };
+    const profileKey = findProfileMatch(fieldInfo);
+    if (profileKey && profile[profileKey]) {
+      matchable++;
+    } else {
+      const label = fieldInfo.label || fieldInfo.name || fieldInfo.id;
+      if (label) unmatchedLabels.push(label);
+    }
+  });
+
+  return { matchable, total, unmatchedLabels };
+}
+
+function autofillFormDetailed(profile) {
+  const inputs = document.querySelectorAll('input, textarea, select');
+  let filled = 0;
+  let total = 0;
+  const matched = [];
+  const unmatched = [];
+
+  inputs.forEach(el => {
+    if (el.type === 'hidden' || el.type === 'submit' || el.type === 'button') return;
+    if (el.offsetParent === null) return;
+    total++;
+
+    const fieldInfo = { id: el.id || '', name: el.name || '', label: findLabel(el) };
+    const displayLabel = fieldInfo.label || fieldInfo.name || fieldInfo.id;
+    const profileKey = findProfileMatch(fieldInfo);
+
+    if (profileKey && profile[profileKey]) {
+      if (setFieldValue(el, profile[profileKey])) {
+        filled++;
+        matched.push(displayLabel);
+      } else {
+        unmatched.push(displayLabel);
+      }
+    } else {
+      unmatched.push(displayLabel);
+    }
+  });
+
+  return { filled, total, matched, unmatched };
+}
+
 function showGrantFillBanner() {
-  const forms = document.querySelectorAll('form');
   const inputs = document.querySelectorAll('input, textarea, select');
   const formFieldCount = Array.from(inputs).filter(el =>
     el.type !== 'hidden' && el.type !== 'submit' && el.type !== 'button' && el.offsetParent !== null
   ).length;
 
   if (formFieldCount < 3) return;
-
   if (document.getElementById('grantfill-banner')) return;
 
   chrome.storage.local.get(['grantfill_profile', 'grantfill_user'], (result) => {
     const profile = result.grantfill_profile;
     const user = result.grantfill_user;
     const hasProfile = profile && Object.keys(profile).length > 0;
+
+    const info = hasProfile ? countMatchableFields(profile) : { matchable: 0, total: formFieldCount, unmatchedLabels: [] };
 
     const banner = document.createElement('div');
     banner.id = 'grantfill-banner';
@@ -268,14 +323,16 @@ function showGrantFillBanner() {
         <div class="gfb-text">
           <div class="gfb-title">GrantFill detectó ${formFieldCount} campos</div>
           <div class="gfb-sub">${hasProfile
-            ? `Conectado como <strong>${user?.org_name || profile.prof_org_name || 'tu ONG'}</strong>`
+            ? `<strong>${info.matchable}</strong> pueden completarse automaticamente como <strong>${user?.org_name || profile.prof_org_name || 'tu ONG'}</strong>. El resto queda para revision manual.`
             : 'Inicia sesion en GrantWell para sincronizar tus datos'
           }</div>
         </div>
         <div class="gfb-actions">
-          ${hasProfile
-            ? `<button id="gfb-autofill" class="gfb-btn-fill">Autocompletar</button>`
-            : `<a href="https://grantwell-app.vercel.app" target="_blank" class="gfb-btn-fill">Ir a GrantWell</a>`
+          ${hasProfile && info.matchable > 0
+            ? `<button id="gfb-autofill" class="gfb-btn-fill">Autocompletar (${info.matchable})</button>`
+            : hasProfile
+              ? `<span style="color:rgba(255,255,255,0.4);font-size:12px;">Completa tu perfil para autocompletar</span>`
+              : `<a href="https://grantwell-app.vercel.app" target="_blank" class="gfb-btn-fill">Ir a GrantWell</a>`
           }
           <button id="gfb-close" class="gfb-btn-close">✕</button>
         </div>
@@ -284,7 +341,6 @@ function showGrantFillBanner() {
     `;
 
     document.body.appendChild(banner);
-
     setTimeout(() => banner.classList.add('gfb-visible'), 100);
 
     document.getElementById('gfb-close').addEventListener('click', () => {
@@ -292,28 +348,27 @@ function showGrantFillBanner() {
       setTimeout(() => banner.remove(), 300);
     });
 
-    if (hasProfile) {
-      document.getElementById('gfb-autofill').addEventListener('click', () => {
-        const res = autofillForm(profile);
-        updateBannerStatus(res.filled, res.total);
+    const autofillBtn = document.getElementById('gfb-autofill');
+    if (autofillBtn && hasProfile) {
+      autofillBtn.addEventListener('click', () => {
+        const res = autofillFormDetailed(profile);
+        const status = document.getElementById('gfb-status');
+        if (!status) return;
+        status.style.display = 'block';
+        status.style.padding = '10px 18px';
+        status.style.borderTop = '1px solid rgba(255,255,255,0.08)';
+
+        let html = '';
+        if (res.filled > 0) {
+          html += `<div style="color:#74c69d;padding:4px 0;">✅ ${res.filled} campos completados</div>`;
+        }
+        if (res.unmatched.length > 0) {
+          html += `<div style="color:rgba(255,255,255,0.5);font-size:12px;padding:4px 0;">📝 Pendientes: ${res.unmatched.slice(0, 5).join(', ')}${res.unmatched.length > 5 ? ` y ${res.unmatched.length - 5} más` : ''}</div>`;
+        }
+        status.innerHTML = html;
       });
     }
   });
-}
-
-function updateBannerStatus(filled, total) {
-  const status = document.getElementById('gfb-status');
-  if (!status) return;
-
-  if (filled > 0) {
-    status.style.display = 'block';
-    status.className = 'gfb-status gfb-status-success';
-    status.textContent = `${filled} de ${total} campos completados`;
-  } else {
-    status.style.display = 'block';
-    status.className = 'gfb-status gfb-status-error';
-    status.textContent = 'No se pudieron completar campos. Revisa tu perfil.';
-  }
 }
 
 const isGoogleForm = window.location.hostname === 'docs.google.com' && window.location.pathname.startsWith('/forms');

@@ -20,26 +20,34 @@ function syncFromApp() {
     grantfill_user: user,
   });
 
-  fetch(`${API_URL}/api/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then(r => r.json())
-    .then(profile => {
-      if (!profile.error) {
-        const mapped = {
-          prof_org_name: profile.org_name || user.org_name || '',
-          prof_contact_name: profile.contact_name || user.contact_name || '',
-          prof_contact_email: profile.email || user.email || '',
-          prof_website: profile.website || '',
-          prof_year_founded: profile.founded ? String(profile.founded) : '',
-          prof_country: profile.country || '',
-          prof_thematic_area: profile.area || '',
-          prof_mission: profile.mission || '',
-        };
-        chrome.storage.local.set({ grantfill_profile: mapped });
-      }
+  chrome.storage.local.get(['grantfill_profile'], (existing) => {
+    const prev = existing.grantfill_profile || {};
+
+    fetch(`${API_URL}/api/me`, {
+      headers: { Authorization: `Bearer ${token}` },
     })
-    .catch(() => {});
+      .then(r => r.json())
+      .then(profile => {
+        if (!profile.error) {
+          const apiData = {
+            prof_org_name: profile.org_name || user.org_name || '',
+            prof_contact_name: profile.contact_name || user.contact_name || '',
+            prof_contact_email: profile.email || user.email || '',
+            prof_website: profile.website || '',
+            prof_year_founded: profile.founded ? String(profile.founded) : '',
+            prof_country: profile.country || '',
+            prof_thematic_area: profile.area || '',
+            prof_mission: profile.mission || '',
+          };
+          const merged = { ...prev };
+          for (const [key, val] of Object.entries(apiData)) {
+            if (val) merged[key] = val;
+          }
+          chrome.storage.local.set({ grantfill_profile: merged });
+        }
+      })
+      .catch(() => {});
+  });
 }
 
 syncFromApp();
