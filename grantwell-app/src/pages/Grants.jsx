@@ -1,4 +1,4 @@
-import './Placeholder.css'
+import './Grants.css'
 
 export function Grants() {
   return (

@@ -6,7 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Applications from './pages/Applications'
 import Profile from './pages/Profile'
 import Login from './pages/Login'
-import { Grants, Donors, Autofill } from './pages/Placeholder'
+import { Grants, Donors, Autofill } from './pages/Grants'
 import './App.css'
 
 function App() {

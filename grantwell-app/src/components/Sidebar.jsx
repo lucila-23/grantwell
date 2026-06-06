@@ -58,7 +58,7 @@ export default function Sidebar({ onLogout }) {
           <div className="user-avatar">{initials}</div>
           <div className="user-info">
             <div className="user-name">{user?.contact_name || 'Usuario'}</div>
-            <div className="user-org">{user?.org_name || ''}</div>
+            <div className="user-org">{user?.name || ''}</div>
           </div>
         </div>
         <button className="logout-btn" onClick={onLogout}>Salir</button>

@@ -1,4 +1,5 @@
-const API_URL = 'https://grantwell-api.lucilaprieto8.workers.dev';
+// Talks to the hakelton-api worker (../../api). Override with VITE_API_URL.
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
 
 export function getToken() {
   return localStorage.getItem('gw_token');
@@ -19,12 +20,21 @@ export function clearAuth() {
   localStorage.removeItem('gw_user');
 }
 
+// Decode the payload of an HS256 JWT (header.payload.signature) without verifying.
+function decodeJwt(token) {
+  const part = token.split('.')[1];
+  if (!part) throw new Error('malformed token');
+  const json = atob(part.replace(/-/g, '+').replace(/_/g, '/'));
+  return JSON.parse(json);
+}
+
 export function isLoggedIn() {
   const token = getToken();
   if (!token) return false;
   try {
-    const payload = JSON.parse(atob(token));
-    return payload.exp > Date.now();
+    const payload = decodeJwt(token);
+    // JWT `exp` is in seconds since epoch.
+    return payload.exp * 1000 > Date.now();
   } catch {
     return false;
   }
@@ -46,45 +56,48 @@ async function request(path, options = {}) {
 }
 
 export async function login(email, password) {
-  const data = await request('/api/auth/login', {
+  // The API returns { token, organization: { id, email } }.
+  const data = await request('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
-  saveAuth(data.token, data.user);
+  // Store token + minimal org first so getProfile() can authenticate, then
+  // upgrade the stored user to the full profile (name, contact_name, …).
+  saveAuth(data.token, data.organization);
+  try {
+    saveAuth(data.token, await getProfile());
+  } catch {
+    // Keep the minimal org if the profile fetch fails for any reason.
+  }
   return data;
 }
 
 export async function register(email, password, org_name, contact_name) {
-  const data = await request('/api/auth/register', {
+  // Registration creates the organization (no token), then we log in for one.
+  await request('/organizations', {
     method: 'POST',
-    body: JSON.stringify({ email, password, org_name, contact_name }),
+    body: JSON.stringify({ email, password, name: org_name, contact_name }),
   });
-  saveAuth(data.token, data.user);
-  return data;
+  return login(email, password);
 }
 
 export async function getProfile() {
-  return request('/api/me');
+  const user = getUser();
+  if (!user?.id) throw new Error('No hay sesion activa');
+  return request(`/organizations/${user.id}`);
 }
 
 export async function updateProfile(profile) {
-  return request('/api/me', {
-    method: 'PUT',
+  const user = getUser();
+  if (!user?.id) throw new Error('No hay sesion activa');
+  return request(`/organizations/${user.id}`, {
+    method: 'PATCH',
     body: JSON.stringify(profile),
   });
 }
 
+// Applications are not yet exposed by the hakelton-api; the UI falls back to
+// mock data. Return an empty list so pages render cleanly until it lands.
 export async function getApplications() {
-  return request('/api/applications');
-}
-
-export async function createApplication(appData) {
-  return request('/api/applications', {
-    method: 'POST',
-    body: JSON.stringify(appData),
-  });
-}
-
-export async function getApplication(id) {
-  return request(`/api/applications/${id}`);
+  return [];
 }

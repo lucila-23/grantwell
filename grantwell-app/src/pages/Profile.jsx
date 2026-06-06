@@ -34,10 +34,17 @@ export default function Profile() {
     setProfile(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleSave = () => {
-    setEditing(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  const handleSave = async () => {
+    setError('')
+    try {
+      const updated = await updateProfile(toApi(profile))
+      setProfile(toForm(updated))
+      setEditing(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch (err) {
+      setError(err.message)
+    }
   }
 
   const handleFileSelect = (docType) => {
@@ -102,6 +109,7 @@ export default function Profile() {
           <p className="page-subtitle">Datos de tu ONG para postulaciones y autofill</p>
         </div>
         <div className="header-actions">
+          {error && <span className="saved-badge" style={{ background: '#fee2e2', color: '#b91c1c' }}>{error}</span>}
           {saved && <span className="saved-badge">Guardado correctamente</span>}
           {editing ? (
             <button className="btn-save" onClick={handleSave}>Guardar cambios</button>
