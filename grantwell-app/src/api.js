@@ -1,5 +1,5 @@
 // Talks to the hakelton-api worker (../../api). Override with VITE_API_URL.
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
+const API_URL = 'https://hakelton-api.marianojacobo.workers.dev'
 
 export function getToken() {
   return localStorage.getItem('gw_token');
@@ -96,8 +96,30 @@ export async function updateProfile(profile) {
   });
 }
 
-// Applications are not yet exposed by the hakelton-api; the UI falls back to
-// mock data. Return an empty list so pages render cleanly until it lands.
+// Grant opportunities (scraped into grant_opportunity). Public, read-only.
+// params: { q, sector, status, limit, offset }
+export async function getGrants(params = {}) {
+  const qs = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== ''),
+  ).toString();
+  return request(`/grants${qs ? `?${qs}` : ''}`);
+}
+
+export async function getGrant(id) {
+  return request(`/grants/${id}`);
+}
+
+// Apply to a grant opportunity. Creates a grant_application (status "Submitted")
+// for the logged-in organization. Idempotent per (org, grant).
+export async function createApplication(grantOpportunityId) {
+  return request('/applications', {
+    method: 'POST',
+    body: JSON.stringify({ grant_opportunity_id: grantOpportunityId }),
+  });
+}
+
+// Listing applications is not yet exposed by the hakelton-api; the UI falls
+// back to mock data. Return an empty list so pages render cleanly until it lands.
 export async function getApplications() {
   return [];
 }

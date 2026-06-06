@@ -1,6 +1,34 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { getProfile, updateProfile } from '../api'
 import { orgProfile } from '../data/mockData'
 import './Profile.css'
+
+// Map the API organization entity <-> the form's field names.
+function toForm(org) {
+  return {
+    name: org.name || '',
+    contact: org.contact_name || '',
+    email: org.email || '',
+    website: org.website || '',
+    founded: org.founded || '',
+    country: org.country || '',
+    area: org.area || '',
+    mission: org.mission || '',
+  }
+}
+
+function toApi(form) {
+  return {
+    name: form.name || null,
+    contact_name: form.contact || null,
+    email: form.email,
+    website: form.website || null,
+    founded: form.founded ? Number(form.founded) : null,
+    country: form.country || null,
+    area: form.area || null,
+    mission: form.mission || null,
+  }
+}
 
 const DOC_TYPES = [
   { key: 'estatuto', label: 'Estatuto social', icon: '📜' },
@@ -23,12 +51,20 @@ function saveDocs(docs) {
 
 export default function Profile() {
   const [profile, setProfile] = useState(orgProfile)
+  const [error, setError] = useState('')
   const [editing, setEditing] = useState(false)
   const [saved, setSaved] = useState(false)
   const [docs, setDocs] = useState(loadDocs)
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef(null)
   const [selectedType, setSelectedType] = useState('')
+
+  // Load the organization record from the DB (GET /organizations/:id).
+  useEffect(() => {
+    getProfile()
+      .then(org => setProfile(toForm(org)))
+      .catch(() => {}) // keep mock fallback if the fetch fails
+  }, [])
 
   const handleChange = (field, value) => {
     setProfile(prev => ({ ...prev, [field]: value }))
