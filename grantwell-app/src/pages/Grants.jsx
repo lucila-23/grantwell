@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getGrants, createApplication } from '../api'
+import { getGrants, getGrantFilters } from '../api'
 import './Grants.css'
 
 const STATUS_OPTIONS = [
@@ -7,7 +7,6 @@ const STATUS_OPTIONS = [
   { value: 'open', label: 'Abiertas' },
   { value: 'forecast', label: 'Previstas' },
   { value: 'closed', label: 'Cerradas' },
-  { value: 'awarded', label: 'Adjudicadas' },
 ]
 
 const STATUS_LABELS = {
@@ -17,16 +16,28 @@ const STATUS_LABELS = {
   awarded: 'Adjudicada',
 }
 
-function formatLocations(str) {
-  if (!str) return null
-  const parts = str.split(',').map(s => s.trim()).filter(Boolean)
-  if (parts.length <= 3) return parts.join(', ')
-  return `${parts.slice(0, 3).join(', ')} +${parts.length - 3} más`
-}
+const SORT_OPTIONS = [
+  { value: 'deadline', label: 'Fecha de cierre' },
+  { value: 'budget_desc', label: 'Mayor presupuesto' },
+  { value: 'budget_asc', label: 'Menor presupuesto' },
+  { value: 'newest', label: 'Más recientes' },
+  { value: 'name', label: 'Nombre A-Z' },
+]
+
+const BUDGET_RANGES = [
+  { value: '', label: 'Cualquier monto' },
+  { value: '0-50000', label: 'Hasta USD 50K' },
+  { value: '50000-250000', label: 'USD 50K - 250K' },
+  { value: '250000-1000000', label: 'USD 250K - 1M' },
+  { value: '1000000-10000000', label: 'USD 1M - 10M' },
+  { value: '10000000-', label: 'Más de USD 10M' },
+]
 
 function formatBudget(budget, currency) {
   if (!budget || budget <= 0) return null
-  return `${currency || ''} ${budget.toLocaleString()}`.trim()
+  if (budget >= 1_000_000) return `${currency || 'USD'} ${(budget / 1_000_000).toFixed(1)}M`
+  if (budget >= 1_000) return `${currency || 'USD'} ${(budget / 1_000).toFixed(0)}K`
+  return `${currency || 'USD'} ${budget.toLocaleString()}`
 }
 
 export function Grants() {
@@ -36,29 +47,34 @@ export function Grants() {
   const [status, setStatus] = useState('open')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  // Per-grant application state, keyed by grant id: { status: 'applying'|'applied'|'error', message? }
-  const [applied, setApplied] = useState({})
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [filterData, setFilterData] = useState(null)
 
-  const handleApply = async (grant) => {
-    window.open(grant.url, '_blank')
-    const current = applied[grant.id]?.status
-    console.log('current', current)
-    if (current === 'applying' || current === 'applied') return // avoid double-submit
-    setApplied(s => ({ ...s, [grant.id]: { status: 'applying' } }))
-    try {
-      await createApplication(grant.id)
-      setApplied(s => ({ ...s, [grant.id]: { status: 'applied' } }))
-    } catch (err) {
-      setApplied(s => ({ ...s, [grant.id]: { status: 'error', message: err.message } }))
-    }
-  }
+  const [source, setSource] = useState('')
+  const [region, setRegion] = useState('')
+  const [category, setCategory] = useState('')
+  const [budgetRange, setBudgetRange] = useState('')
+  const [sort, setSort] = useState('deadline')
+
+  useEffect(() => {
+    getGrantFilters().then(setFilterData).catch(() => {})
+  }, [])
+
+  const activeFilterCount = [source, region, category, budgetRange].filter(Boolean).length
 
   useEffect(() => {
     setLoading(true)
     setError('')
-    // Debounce the text search so we don't fire a request per keystroke.
+
+    const params = { q: query, status, source, region, category, sort, limit: 60 }
+    if (budgetRange) {
+      const [min, max] = budgetRange.split('-')
+      if (min) params.budget_min = min
+      if (max) params.budget_max = max
+    }
+
     const handle = setTimeout(() => {
-      getGrants({ q: query, status, limit: 60 })
+      getGrants(params)
         .then(data => {
           setGrants(data.items || [])
           setTotal(data.total || 0)
@@ -67,14 +83,22 @@ export function Grants() {
         .finally(() => setLoading(false))
     }, 300)
     return () => clearTimeout(handle)
-  }, [query, status])
+  }, [query, status, source, region, category, budgetRange, sort])
+
+  const clearFilters = () => {
+    setSource('')
+    setRegion('')
+    setCategory('')
+    setBudgetRange('')
+    setSort('deadline')
+  }
 
   return (
     <div className="grants-page">
       <div className="page-header">
         <div>
           <h1>Grants Disponibles</h1>
-          <p className="page-subtitle">Oportunidades de financiamiento de developmentaid.org</p>
+          <p className="page-subtitle">{total} oportunidades de Grants.gov y EU Funding</p>
         </div>
       </div>
 
@@ -82,22 +106,89 @@ export function Grants() {
         <input
           className="grants-search"
           type="search"
-          placeholder="Buscar por nombre…"
+          placeholder="Buscar por nombre, agencia, sector o descripcion…"
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
-        <div className="grants-filters">
-          {STATUS_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              className={`filter-btn ${status === opt.value ? 'active' : ''}`}
-              onClick={() => setStatus(opt.value)}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+        <button
+          className={`filter-toggle ${filtersOpen ? 'active' : ''} ${activeFilterCount ? 'has-filters' : ''}`}
+          onClick={() => setFiltersOpen(!filtersOpen)}
+        >
+          Filtros{activeFilterCount > 0 && ` (${activeFilterCount})`}
+        </button>
       </div>
+
+      <div className="status-bar">
+        {STATUS_OPTIONS.map(opt => (
+          <button
+            key={opt.value}
+            className={`filter-btn ${status === opt.value ? 'active' : ''}`}
+            onClick={() => setStatus(opt.value)}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {filtersOpen && (
+        <div className="filters-panel">
+          <div className="filters-grid">
+            <div className="filter-group">
+              <label>Categoria</label>
+              <select value={category} onChange={e => setCategory(e.target.value)}>
+                <option value="">Todas las categorias</option>
+                {filterData?.categories?.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label>Presupuesto</label>
+              <select value={budgetRange} onChange={e => setBudgetRange(e.target.value)}>
+                {BUDGET_RANGES.map(b => (
+                  <option key={b.value} value={b.value}>{b.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label>Region</label>
+              <select value={region} onChange={e => setRegion(e.target.value)}>
+                <option value="">Todas las regiones</option>
+                {filterData?.regions?.map(r => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label>Fuente</label>
+              <select value={source} onChange={e => setSource(e.target.value)}>
+                <option value="">Todas las fuentes</option>
+                {filterData?.sources?.map(s => (
+                  <option key={s} value={s}>{s === 'grants.gov' ? 'Grants.gov (US)' : 'EU Funding (Europa)'}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label>Ordenar por</label>
+              <select value={sort} onChange={e => setSort(e.target.value)}>
+                {SORT_OPTIONS.map(s => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {activeFilterCount > 0 && (
+            <button className="clear-filters" onClick={clearFilters}>
+              Limpiar filtros
+            </button>
+          )}
+        </div>
+      )}
 
       {error && <div className="grants-error">No se pudieron cargar los grants: {error}</div>}
 
@@ -106,115 +197,43 @@ export function Grants() {
       ) : grants.length === 0 ? (
         <div className="grants-empty">No se encontraron grants con esos filtros.</div>
       ) : (
-        <>
-          <div className="grants-count">{total} oportunidad{total === 1 ? '' : 'es'}</div>
-          <div className="grants-grid">
-            {grants.map(g => {
-              const locations = formatLocations(g.location_names)
-              const budget = formatBudget(g.budget, g.currency)
-              const app = applied[g.id]
-              return (
-                <div
-                  key={g.id}
-                  className={`grant-card ${app?.status === 'applied' ? 'applied' : ''}`}
-                  onClick={() => handleApply(g)}
-                  role="button"
-                  tabIndex={0}
-                  title="Postularte a esta oportunidad"
-                >
-                  <div className="grant-card-top">
-                    <span className={`grant-status status-${g.status}`}>
-                      {STATUS_LABELS[g.status] || g.status || '—'}
-                    </span>
-                    {g.deadline && <span className="grant-deadline">Fecha de cierre: {new Date(g.deadline).toLocaleDateString('es-AR')}</span>}
-                  </div>
-                  <h3 className="grant-name">
-                    {
-                      g.name
-                    }
-                  </h3>
-                  {g.donors && <p className="grant-donor">{g.donors}</p>}
-                  {g.sector && <p className="grant-sector">{g.sector}</p>}
-                  <div className="grant-card-footer">
-                    {locations && <span className="grant-location">📍 {locations}</span>}
-                    {budget && <span className="grant-budget">{budget}</span>}
-                  </div>
-                  {app && (
-                    <div className={`grant-apply grant-apply-${app.status}`}>
-                      {app.status === 'applying' && 'Postulando…'}
-                      {app.status === 'applied' && '✓ Postulación enviada'}
-                      {app.status === 'error' && `Error: ${app.message}`}
-                    </div>
-                  )}
+        <div className="grants-grid">
+          {grants.map(g => {
+            const budget = formatBudget(g.budget, g.currency)
+            return (
+              <a
+                key={g.id}
+                className="grant-card"
+                href={g.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="grant-card-top">
+                  <span className={`grant-status status-${g.status}`}>
+                    {STATUS_LABELS[g.status] || g.status || '—'}
+                  </span>
+                  {g.deadline && <span className="grant-deadline">{g.deadline}</span>}
                 </div>
-              )
-            })}
-          </div>
-        </>
+                <h3 className="grant-name">{g.name}</h3>
+                {g.donors && <p className="grant-donor">{g.donors}</p>}
+                {g.description && (
+                  <p className="grant-description">
+                    {g.description.length > 120 ? g.description.slice(0, 120) + '…' : g.description}
+                  </p>
+                )}
+                <div className="grant-card-tags">
+                  {g.sector && <span className="grant-tag">{g.sector.split(',')[0]}</span>}
+                  {g.location_names && <span className="grant-tag">{g.location_names.split(',')[0]}</span>}
+                </div>
+                <div className="grant-card-footer">
+                  {budget && <span className="grant-budget">{budget}</span>}
+                  {g.source && <span className="grant-source">{g.source}</span>}
+                </div>
+              </a>
+            )
+          })}
+        </div>
       )}
-    </div>
-  )
-}
-
-export function Donors() {
-  return (
-    <div className="placeholder-page">
-      <div className="placeholder-icon">💜</div>
-      <h1>Donantes Individuales</h1>
-      <p>Gestion del funnel de donantes: captacion, conversion, cobro, recuperacion y fidelizacion.</p>
-      <div className="placeholder-badge">En desarrollo por el equipo</div>
-      <div className="placeholder-features">
-        <div className="pf-item">
-          <span>👥</span>
-          <span>Base de donantes unificada</span>
-        </div>
-        <div className="pf-item">
-          <span>📱</span>
-          <span>Integracion con WhatsApp</span>
-        </div>
-        <div className="pf-item">
-          <span>💳</span>
-          <span>Gestion de debitos rechazados</span>
-        </div>
-        <div className="pf-item">
-          <span>📈</span>
-          <span>Metricas de retencion</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function Autofill() {
-  return (
-    <div className="placeholder-page">
-      <div className="placeholder-icon">⚡</div>
-      <h1>PolenFill Extension</h1>
-      <p>Extension de Chrome que autocompleta formularios de postulacion con los datos de tu organizacion.</p>
-      <div className="placeholder-badge installed">Extension disponible</div>
-      <div className="autofill-steps">
-        <div className="step">
-          <div className="step-number">1</div>
-          <div>
-            <h3>Instala la extension</h3>
-            <p>Descarga e instala PolenFill en Chrome desde chrome://extensions</p>
-          </div>
-        </div>
-        <div className="step">
-          <div className="step-number">2</div>
-          <div>
-            <h3>Carga tu perfil</h3>
-            <p>Los datos de "Mi Organizacion" se sincronizan con la extension</p>
-          </div>
-        </div>
-        <div className="step">
-          <div className="step-number">3</div>
-          <div>
-            <h3>Postulate en 1 click</h3>
-            <p>Navega a cualquier formulario de grant y usa PolenFill para autocompletar</p>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

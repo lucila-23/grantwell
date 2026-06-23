@@ -1,3 +1,44 @@
+CREATE TABLE IF NOT EXISTS grants (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  source TEXT NOT NULL,
+  source_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  funder TEXT,
+  agency TEXT,
+  status TEXT NOT NULL DEFAULT 'open',
+  open_date TEXT,
+  deadline TEXT,
+  amount_min REAL,
+  amount_max REAL,
+  currency TEXT DEFAULT 'USD',
+  description TEXT,
+  categories TEXT,
+  eligibility TEXT,
+  country TEXT,
+  region TEXT,
+  url TEXT,
+  raw_data TEXT,
+  scraped_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(source, source_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_grants_status ON grants(status);
+CREATE INDEX IF NOT EXISTS idx_grants_deadline ON grants(deadline);
+CREATE INDEX IF NOT EXISTS idx_grants_source ON grants(source);
+
+CREATE TABLE IF NOT EXISTS scrape_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  source TEXT NOT NULL,
+  started_at TEXT NOT NULL DEFAULT (datetime('now')),
+  finished_at TEXT,
+  grants_found INTEGER DEFAULT 0,
+  grants_new INTEGER DEFAULT 0,
+  grants_updated INTEGER DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'running',
+  error TEXT
+);
+
 CREATE TABLE IF NOT EXISTS applications (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   grant_name TEXT NOT NULL,

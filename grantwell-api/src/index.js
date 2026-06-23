@@ -1,3 +1,5 @@
+import { runAllScrapers, scrapeGrantsGov, scrapeEUFunding, enrichGrantsGov } from './scrapers.js';
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -36,16 +38,21 @@ function verifyToken(request) {
 }
 
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runAllScrapers(env.DB));
+  },
+
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: CORS_HEADERS });
     }
 
     const url = new URL(request.url);
-    const path = url.pathname;
+    const rawPath = url.pathname;
+    const path = rawPath.startsWith('/api/') ? rawPath : `/api${rawPath}`;
 
     try {
-      if (path === '/api/auth/register' && request.method === 'POST') {
+      if ((path === '/api/auth/register' || path === '/api/organizations') && request.method === 'POST') {
         return register(request, env.DB);
       }
       if (path === '/api/auth/login' && request.method === 'POST') {
@@ -55,15 +62,36 @@ export default {
         return json({ status: 'ok', timestamp: new Date().toISOString() });
       }
 
+      if (path === '/api/grants/filters' && request.method === 'GET') {
+        return getGrantFilters(env.DB);
+      }
+      if (path === '/api/grants' && request.method === 'GET') {
+        return listGrants(url, env.DB);
+      }
+      if (path.match(/^\/api\/grants\/\d+$/) && request.method === 'GET') {
+        const id = path.split('/').pop();
+        return getGrant(id, env.DB);
+      }
+      if (path === '/api/scrape' && request.method === 'POST') {
+        const source = url.searchParams.get('source') || 'all';
+        let scrapePromise;
+        if (source === 'grants.gov') scrapePromise = scrapeGrantsGov(env.DB);
+        else if (source === 'eu-funding') scrapePromise = scrapeEUFunding(env.DB);
+        else if (source === 'enrich') scrapePromise = enrichGrantsGov(env.DB);
+        else scrapePromise = runAllScrapers(env.DB);
+        const results = await scrapePromise;
+        return json({ message: 'Scraping complete', source, results });
+      }
+
       const user = verifyToken(request);
       if (!user) {
         return json({ error: 'Unauthorized' }, 401);
       }
 
-      if (path === '/api/me' && request.method === 'GET') {
+      if ((path === '/api/me' || path.match(/^\/api\/organizations\/\d+$/)) && request.method === 'GET') {
         return getProfile(user.userId, env.DB);
       }
-      if (path === '/api/me' && request.method === 'PUT') {
+      if ((path === '/api/me' && request.method === 'PUT') || (path.match(/^\/api\/organizations\/\d+$/) && request.method === 'PATCH')) {
         return updateProfile(user.userId, request, env.DB);
       }
       if (path === '/api/applications' && request.method === 'GET') {
@@ -90,7 +118,8 @@ export default {
 
 async function register(request, db) {
   const body = await request.json();
-  const { email, password, org_name, contact_name } = body;
+  const { email, password, contact_name } = body;
+  const org_name = body.org_name || body.name;
 
   if (!email || !password || !org_name || !contact_name) {
     return json({ error: 'Todos los campos son obligatorios' }, 400);
@@ -113,7 +142,8 @@ async function register(request, db) {
 
   return json({
     token,
-    user: { id: userId, email, org_name, contact_name }
+    user: { id: userId, email, org_name, contact_name },
+    organization: { id: userId, email, org_name, contact_name }
   }, 201);
 }
 
@@ -137,15 +167,14 @@ async function login(request, db) {
 
   const token = generateToken(user.id, user.email);
 
-  return json({
-    token,
-    user: {
-      id: user.id, email: user.email, org_name: user.org_name,
-      contact_name: user.contact_name, website: user.website,
-      founded: user.founded, country: user.country,
-      area: user.area, mission: user.mission,
-    }
-  });
+  const profile = {
+    id: user.id, email: user.email, org_name: user.org_name,
+    contact_name: user.contact_name, website: user.website,
+    founded: user.founded, country: user.country,
+    area: user.area, mission: user.mission,
+  };
+
+  return json({ token, user: profile, organization: profile });
 }
 
 async function getProfile(userId, db) {
@@ -245,6 +274,168 @@ async function createApplication(userId, request, db) {
   `).bind(appId, today).run();
 
   return json({ id: appId, status: 'submitted', message: 'Application created' }, 201);
+}
+
+async function getGrantFilters(db) {
+  const [categories, agencies, regions, budgetRange] = await Promise.all([
+    db.prepare(`SELECT DISTINCT categories as val FROM grants WHERE categories IS NOT NULL AND categories != '' ORDER BY categories`).all(),
+    db.prepare(`SELECT funder as val, COUNT(*) as cnt FROM grants WHERE funder IS NOT NULL GROUP BY funder HAVING cnt >= 2 ORDER BY cnt DESC`).all(),
+    db.prepare(`SELECT DISTINCT region as val FROM grants WHERE region IS NOT NULL ORDER BY region`).all(),
+    db.prepare(`SELECT MIN(amount_max) as min, MAX(amount_max) as max FROM grants WHERE amount_max IS NOT NULL`).first(),
+  ]);
+
+  const CATEGORY_MAP = {
+    'Education': 'Education',
+    'education': 'Education',
+    'Health': 'Health',
+    'health': 'Health',
+    'Environment': 'Environment',
+    'environment': 'Environment',
+    'community': 'Community Development',
+    'Community Development': 'Community Development',
+    'nonprofit': 'Nonprofit',
+    'Agriculture': 'Agriculture',
+    'Science and Technology and other Research and Development': 'Science & Technology',
+    'Arts': 'Arts & Culture',
+    'Income Security and Social Services': 'Social Services',
+    'Law, Justice and Legal Services': 'Law & Justice',
+    'Disaster Prevention and Relief': 'Disaster Relief',
+    'Food and Nutrition': 'Food & Nutrition',
+    'Natural Resources': 'Natural Resources',
+    'Business and Commerce': 'Business & Commerce',
+    'Employment, Labor and Training': 'Employment & Training',
+    'Housing': 'Housing',
+  };
+
+  const catSet = new Set();
+  for (const r of (categories.results || [])) {
+    const mapped = CATEGORY_MAP[r.val];
+    if (mapped) catSet.add(mapped);
+  }
+
+  return json({
+    categories: [...catSet].sort(),
+    agencies: (agencies.results || []).map(r => r.val),
+    regions: (regions.results || []).map(r => r.val),
+    budget: { min: budgetRange?.min || 0, max: budgetRange?.max || 0 },
+    sources: ['grants.gov', 'eu-funding'],
+  });
+}
+
+async function listGrants(url, db) {
+  const q = url.searchParams.get('q') || '';
+  const status = url.searchParams.get('status') || '';
+  const source = url.searchParams.get('source') || '';
+  const region = url.searchParams.get('region') || '';
+  const category = url.searchParams.get('category') || '';
+  const budgetMin = url.searchParams.get('budget_min') || '';
+  const budgetMax = url.searchParams.get('budget_max') || '';
+  const deadlineFrom = url.searchParams.get('deadline_from') || '';
+  const deadlineTo = url.searchParams.get('deadline_to') || '';
+  const sortBy = url.searchParams.get('sort') || 'deadline';
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '60'), 200);
+  const offset = parseInt(url.searchParams.get('offset') || '0');
+
+  let where = ['1=1'];
+  let binds = [];
+
+  if (q) {
+    where.push('(title LIKE ? OR agency LIKE ? OR categories LIKE ? OR description LIKE ? OR funder LIKE ?)');
+    binds.push(`%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`);
+  }
+  if (status) {
+    where.push('status = ?');
+    binds.push(status);
+  }
+  if (source) {
+    where.push('source = ?');
+    binds.push(source);
+  }
+  if (region) {
+    where.push('region = ?');
+    binds.push(region);
+  }
+  if (category) {
+    where.push('categories LIKE ?');
+    binds.push(`%${category}%`);
+  }
+  if (budgetMin) {
+    where.push('amount_max >= ?');
+    binds.push(parseFloat(budgetMin));
+  }
+  if (budgetMax) {
+    where.push('amount_max <= ?');
+    binds.push(parseFloat(budgetMax));
+  }
+  if (deadlineFrom) {
+    where.push('deadline >= ?');
+    binds.push(deadlineFrom);
+  }
+  if (deadlineTo) {
+    where.push('deadline <= ?');
+    binds.push(deadlineTo);
+  }
+
+  const orderClauses = {
+    deadline: 'deadline ASC NULLS LAST',
+    budget_desc: 'amount_max DESC NULLS LAST',
+    budget_asc: 'amount_max ASC NULLS LAST',
+    newest: 'scraped_at DESC',
+    name: 'title ASC',
+  };
+  const orderBy = orderClauses[sortBy] || orderClauses.deadline;
+
+  const countResult = await db.prepare(
+    `SELECT COUNT(*) as total FROM grants WHERE ${where.join(' AND ')}`
+  ).bind(...binds).first();
+
+  const rows = await db.prepare(
+    `SELECT * FROM grants WHERE ${where.join(' AND ')} ORDER BY ${orderBy} LIMIT ? OFFSET ?`
+  ).bind(...binds, limit, offset).all();
+
+  const items = (rows.results || []).map(g => ({
+    id: g.id,
+    name: g.title,
+    donors: g.funder,
+    sector: g.categories,
+    status: g.status,
+    deadline: g.deadline,
+    location_names: [g.country, g.region].filter(Boolean).join(', '),
+    budget: g.amount_max,
+    budget_min: g.amount_min,
+    currency: g.currency,
+    url: g.url,
+    source: g.source,
+    agency: g.agency,
+    open_date: g.open_date,
+    description: g.description,
+    eligibility: g.eligibility,
+  }));
+
+  return json({ items, total: countResult?.total || 0 });
+}
+
+async function getGrant(id, db) {
+  const g = await db.prepare('SELECT * FROM grants WHERE id = ?').bind(id).first();
+  if (!g) return json({ error: 'Not found' }, 404);
+  return json({
+    id: g.id,
+    name: g.title,
+    donors: g.funder,
+    sector: g.categories,
+    status: g.status,
+    deadline: g.deadline,
+    location_names: [g.country, g.region].filter(Boolean).join(', '),
+    budget: g.amount_max,
+    currency: g.currency,
+    url: g.url,
+    source: g.source,
+    agency: g.agency,
+    open_date: g.open_date,
+    description: g.description,
+    eligibility: g.eligibility,
+    raw_data: g.raw_data,
+  });
 }
 
 async function updateStatus(id, request, db) {

@@ -17,11 +17,15 @@ export default function Sidebar({ onLogout }) {
 
       <nav className="sidebar-nav">
         <div className="nav-section">
-          <div className="nav-section-label">Principal</div>
+          <div className="nav-section-label">Oportunidades</div>
           <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-            <span className="nav-icon">📊</span>
-            Dashboard
+            <span className="nav-icon">🎯</span>
+            Grants Disponibles
           </NavLink>
+        </div>
+
+        <div className="nav-section">
+          <div className="nav-section-label">Gestion</div>
           <NavLink to="/applications" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <span className="nav-icon">📋</span>
             Mis Postulaciones
@@ -29,26 +33,6 @@ export default function Sidebar({ onLogout }) {
           <NavLink to="/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <span className="nav-icon">🏢</span>
             Mi Organizacion
-          </NavLink>
-        </div>
-
-        <div className="nav-section">
-          <div className="nav-section-label">Oportunidades</div>
-          <NavLink to="/grants" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-            <span className="nav-icon">🎯</span>
-            Grants Disponibles
-          </NavLink>
-          <NavLink to="/donors" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-            <span className="nav-icon">💜</span>
-            Donantes Individuales
-          </NavLink>
-        </div>
-
-        <div className="nav-section">
-          <div className="nav-section-label">Herramientas</div>
-          <NavLink to="/autofill" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-            <span className="nav-icon">⚡</span>
-            PolenFill Extension
           </NavLink>
         </div>
       </nav>

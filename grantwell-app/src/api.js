@@ -1,5 +1,5 @@
 // Talks to the hakelton-api worker (../../api). Override with VITE_API_URL.
-const API_URL = 'https://hakelton-api.marianojacobo.workers.dev'
+const API_URL = import.meta.env.VITE_API_URL || 'https://grantwell-api.lucilaprieto8.workers.dev'
 
 export function getToken() {
   return localStorage.getItem('gw_token');
@@ -107,6 +107,10 @@ export async function getGrants(params = {}) {
 
 export async function getGrant(id) {
   return request(`/grants/${id}`);
+}
+
+export async function getGrantFilters() {
+  return request('/grants/filters');
 }
 
 // Apply to a grant opportunity. Creates a grant_application (status "Submitted")
